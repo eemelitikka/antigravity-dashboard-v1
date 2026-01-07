@@ -285,13 +285,16 @@ Each account has:
    cp .env.example .env
    ```
 
-2. Configure your Google OAuth credentials in `.env`:
+2. The `.env.example` file already contains the correct OAuth credentials from the opencode-antigravity-auth plugin. These credentials are **required** because refresh tokens are bound to the OAuth client that issued them.
+
+   - **Source:** [opencode-antigravity-auth/src/constants.ts](https://github.com/NoeFabris/opencode-antigravity-auth/blob/main/src/constants.ts)
+
    ```env
-   GOOGLE_CLIENT_ID=<your-google-client-id>
-   GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+   GOOGLE_CLIENT_ID=1071006060591-tmhssin2h21lcre235vtolojh4g403ep.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=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
    ```
    
-   You need to create OAuth credentials in the Google Cloud Console. See the README for detailed setup instructions.
+   > **Note:** Do NOT create your own OAuth credentials. Using different credentials will result in `unauthorized_client` errors because the tokens in your accounts file were issued by the plugin's OAuth client.
 
 ### Environment Variables
 

@@ -50,39 +50,19 @@ npm install
 
 ### 3. Configure Google OAuth
 
-You need Google OAuth credentials to fetch quota data from Google's Cloud Code API.
-
-#### Create OAuth Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Navigate to **APIs & Services** > **OAuth consent screen**
-   - Choose "External" user type
-   - Fill in the required fields (app name, user support email, developer email)
-   - Add scopes: `openid`, `email`, `profile`
-   - Add yourself as a test user
-4. Navigate to **APIs & Services** > **Credentials**
-5. Click **Create Credentials** > **OAuth client ID**
-   - Application type: **Desktop app** (or Web application)
-   - Name: "Antigravity Dashboard" (or any name)
-6. Copy the **Client ID** and **Client Secret**
+> **IMPORTANT:** You must use the **same OAuth credentials** that the [opencode-antigravity-auth](https://github.com/NoeFabris/opencode-antigravity-auth) plugin uses. Refresh tokens are cryptographically bound to the OAuth client that issued them. Using different credentials will result in `unauthorized_client` errors.
 
 #### Configure Environment Variables
 
 ```bash
-# Copy the example environment file
+# Copy the example environment file - credentials are pre-configured!
 cp .env.example .env
-
-# Edit .env with your credentials
-nano .env  # or use your preferred editor
 ```
 
-Add your OAuth credentials:
+That's it! The `.env.example` file already contains the correct OAuth credentials from the plugin's source code:
+- **Source:** [opencode-antigravity-auth/src/constants.ts](https://github.com/NoeFabris/opencode-antigravity-auth/blob/main/src/constants.ts)
 
-```env
-GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=your-client-secret
-```
+You do **NOT** need to create your own Google OAuth credentials.
 
 ### 4. Build and Start
 
@@ -98,9 +78,18 @@ Dashboard available at: **http://localhost:3456**
 
 ## Quick Start
 
-1. **Install:** `npm install`
-2. **Configure:** Add `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` to `.env`
-3. **Launch:** `npm run build && npm start`
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Copy environment file (credentials are pre-configured!)
+cp .env.example .env
+
+# 3. Build and launch
+npm run build && npm start
+```
+
+Dashboard available at: **http://localhost:3456**
 
 ## Configuration
 
@@ -323,11 +312,26 @@ antigravity-dashboard/
 
 ## Troubleshooting
 
+### OAuth Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `unauthorized_client` | Wrong OAuth credentials | Use the plugin's credentials (see Quick Start) |
+| `invalid_client` | Missing or malformed credentials | Check `.env` file has correct `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` |
+| `invalid_grant` | Refresh token expired or revoked | Re-authenticate via opencode-antigravity-auth plugin |
+
+> **Why must I use the plugin's OAuth credentials?**
+> 
+> OAuth refresh tokens are cryptographically bound to the client ID that issued them. Your accounts file contains tokens created by the opencode-antigravity-auth plugin, so you must use the same OAuth client credentials to refresh them.
+
+### Common Issues
+
 - **Dashboard shows "Waiting for backend connection"** → Check if server is running on port 3456.
 - **401 Unauthorized errors** → Make sure `DASHBOARD_SECRET` is set correctly in `.env`, or remove it for localhost-only mode.
 - **WebSocket disconnects frequently** → Check network stability; the dashboard will auto-reconnect.
 - **Quotas not updating** → Verify Google OAuth credentials are correct in `.env`.
 - **Rate limit errors in proxy** → Your account quota may be exhausted; try another account or wait for reset.
+- **Language Server not detected** → Make sure the Antigravity VS Code extension is running.
 
 ## Related Projects
 
