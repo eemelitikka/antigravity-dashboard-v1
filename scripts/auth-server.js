@@ -202,29 +202,36 @@ const server = http.createServer(async (req, res) => {
         .card { background: #1e293b; padding: 2rem; border-radius: 1rem; text-align: center; border: 1px solid #334155; }
         h1 { color: #4ade80; }
         p { color: #94a3b8; }
-        code { background: #334155; padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-family: monospace; color: #e2e8f0; }
+        .btn { display: inline-block; background-color: #3b82f6; color: white; padding: 0.5rem 1rem; text-decoration: none; border-radius: 0.25rem; margin-top: 1rem; font-weight: 500;}
+        .btn:hover { background-color: #2563eb; }
+        .btn-secondary { background-color: #334155; margin-left: 0.5rem; }
+        .btn-secondary:hover { background-color: #475569; }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>Authentication Successful</h1>
         <p>Connected as <strong>${email}</strong></p>
-        <p>You can close this window now.</p>
-        <p>Checking terminal...</p>
+        <p>The account has been saved. The dashboard should update automatically.</p>
+        
+        <div style="margin-top: 2rem;">
+            <a href="/" class="btn">Add Another Account</a>
+            <button onclick="window.close()" class="btn btn-secondary">Close Window</button>
+        </div>
     </div>
-    <script>setTimeout(() => window.close(), 5000)</script>
 </body>
 </html>
             `);
             console.log(`Successfully authenticated: ${email}`);
-            setTimeout(() => process.exit(0), 1000); // Clean exit
+            console.log('Server is still running. You can add another account or press Ctrl+C to stop.');
+            // Removed process.exit(0) to allow adding multiple accounts
         } catch (e) {
             res.writeHead(500, { 'Content-Type': 'text/html' });
             res.end(`
 <!DOCTYPE html>
 <html>
 <head><title>Error</title><style>body{background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif}.err{color:#f87171;background:#450a0a;padding:2rem;border-radius:1rem}</style></head>
-<body><div class="err"><h1>Authentication Failed</h1><pre>${e.message}\n\n${JSON.stringify(e, null, 2)}</pre></div></body>
+<body><div class="err"><h1>Authentication Failed</h1><pre>${e.message}\n\n${JSON.stringify(e, null, 2)}</pre><br><a href="/" style="color:#fff">Try Again</a></div></body>
 </html>
             `);
             console.error(e);
