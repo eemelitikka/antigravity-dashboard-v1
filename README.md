@@ -29,9 +29,28 @@ Real-time monitoring dashboard for Google Cloud accounts using the [Antigravity 
 ## Prerequisites
 
 - **Node.js 18+** (check with `node --version`)
-- **npm 9+** (comes with Node.js)
+- **pnpm 9+** - Fast, disk-efficient package manager (see [Installing pnpm](#installing-pnpm))
 - **Google Cloud Account** with OAuth credentials configured
 - **Antigravity accounts** - OAuth tokens from [opencode-antigravity-auth](https://github.com/NoeFabris/opencode-antigravity-auth)
+
+### Installing pnpm
+
+Choose one of these methods:
+
+```bash
+# Option 1: Using Corepack (recommended - built into Node.js 16.10+)
+corepack enable
+corepack prepare pnpm@latest --activate
+
+# Option 2: Using npm
+npm install -g pnpm
+
+# Option 3: Using Homebrew (macOS)
+brew install pnpm
+
+# Verify installation
+pnpm --version
+```
 
 ## Installation
 
@@ -45,7 +64,7 @@ cd antigravity-dashboard
 ### 2. Install Dependencies
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 3. Configure Google OAuth
@@ -68,10 +87,10 @@ You do **NOT** need to create your own Google OAuth credentials.
 
 ```bash
 # Build backend and frontend
-npm run build
+pnpm run build
 
 # Start the server
-npm start
+pnpm start
 ```
 
 Dashboard available at: **http://localhost:3456**
@@ -80,13 +99,13 @@ Dashboard available at: **http://localhost:3456**
 
 ```bash
 # 1. Install dependencies
-npm install
+pnpm install
 
 # 2. Copy environment file (credentials are pre-configured!)
 cp .env.example .env
 
 # 3. Build and launch
-npm run build && npm start
+pnpm run build && pnpm start
 ```
 
 Dashboard available at: **http://localhost:3456**
@@ -224,13 +243,54 @@ Connect to `/ws` for live updates:
 
 ## Development
 
+### Common pnpm Commands
+
+```bash
+# Install all dependencies
+pnpm install
+
+# Build all workspace packages
+pnpm run build
+
+# Start development mode (all packages)
+pnpm run dev
+
+# Start production server
+pnpm start
+
+# Run type checking
+pnpm run typecheck
+```
+
+### Workspace Commands (--filter syntax)
+
+pnpm uses the `--filter` flag to run commands in specific workspace packages:
+
+```bash
+# Run command in a specific package
+pnpm --filter @antigravity/web dev        # Start web dev server
+pnpm --filter @antigravity/backend dev    # Start backend dev server
+
+# Build a specific package
+pnpm --filter @antigravity/web build
+
+# Install a dependency to a specific package
+pnpm --filter @antigravity/backend add express
+pnpm --filter @antigravity/web add -D @types/react
+
+# Run commands in all app packages
+pnpm --filter "./apps/*" run build
+
+# Run type checking on backend only
+pnpm run --filter @antigravity/backend typecheck
+```
+
 ### Frontend Dev Server
 
 Start with hot reload (proxies to backend):
 
 ```bash
-cd apps/web
-npm run dev
+pnpm --filter @antigravity/web dev
 ```
 
 Dev server runs on port 5173 and proxies `/api` and `/ws` to port 3456.
@@ -240,21 +300,7 @@ Dev server runs on port 5173 and proxies `/api` and `/ws` to port 3456.
 Watch mode for TypeScript compilation:
 
 ```bash
-cd apps/backend
-npm run dev
-```
-
-### Build Commands
-
-```bash
-# Build all packages
-npm run build
-
-# Run dev mode for all packages
-npm run dev
-
-# Start production server
-npm start
+pnpm --filter @antigravity/backend dev
 ```
 
 ## Project Structure
@@ -345,6 +391,43 @@ antigravity-dashboard/
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### Migrating from npm to pnpm
+
+If you previously used npm with this project:
+
+```bash
+# 1. Remove npm artifacts
+rm -rf node_modules
+rm -rf apps/*/node_modules
+rm -f package-lock.json apps/*/package-lock.json
+
+# 2. Install pnpm (if not already installed)
+corepack enable && corepack prepare pnpm@latest --activate
+# OR: npm install -g pnpm
+
+# 3. Install dependencies with pnpm
+pnpm install
+
+# 4. Verify the setup
+pnpm run build
+```
+
+**Key differences from npm:**
+| npm | pnpm |
+|-----|------|
+| `npm install` | `pnpm install` |
+| `npm run <script>` | `pnpm run <script>` or `pnpm <script>` |
+| `npm run -w apps/web dev` | `pnpm --filter @antigravity/web dev` |
+| `npm install <pkg>` | `pnpm add <pkg>` |
+| `npm install -D <pkg>` | `pnpm add -D <pkg>` |
+| `package-lock.json` | `pnpm-lock.yaml` |
+
+**Why pnpm?**
+- **Faster installs** - Content-addressable storage with hard links
+- **Disk efficient** - Packages stored once globally, linked per project
+- **Strict dependencies** - Only declared dependencies are accessible
+- **Better monorepo support** - Native workspace protocol
 
 ## License
 
