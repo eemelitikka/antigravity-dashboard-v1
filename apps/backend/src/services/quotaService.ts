@@ -429,6 +429,8 @@ export class QuotaService extends EventEmitter {
     return this.getCacheAge() > this.pollingMs;
   }
 
+  private pollingInFlight = false;
+
   startPolling(getAccounts: () => Array<{
     email: string;
     refreshToken: string;
@@ -443,9 +445,17 @@ export class QuotaService extends EventEmitter {
     });
 
     this.pollingInterval = setInterval(async () => {
-      const accounts = getAccounts();
-      if (accounts.length > 0) {
-        await this.fetchAllQuotas(accounts);
+      if (this.pollingInFlight) return;
+      this.pollingInFlight = true;
+      try {
+        const accounts = getAccounts();
+        if (accounts.length > 0) {
+          await this.fetchAllQuotas(accounts);
+        }
+      } catch (err) {
+        console.error('[QuotaService] Polling quota fetch failed:', err);
+      } finally {
+        this.pollingInFlight = false;
       }
     }, this.pollingMs);
 

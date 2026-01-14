@@ -80,7 +80,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
         case 'rate_limit_change':
           if (message.data) {
             const { email, family, cleared } = message.data;
-            if (cleared && preferences.notifyOnRateLimitClear) {
+            if (cleared && preferences.notifyOnRateLimitClear && typeof email === 'string' && typeof family === 'string') {
               addNotification({
                 type: 'success',
                 title: 'Rate Limit Cleared',

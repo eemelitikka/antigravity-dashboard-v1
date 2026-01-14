@@ -401,7 +401,7 @@ export class ApiProxyService {
                     type: 'tool_use',
                     id: tc.id,
                     name: originalName,
-                    input: JSON.parse(tc.function.arguments),
+                    input: safeParseToolArgs(tc.function.arguments),
                   });
                   currentBlockIndex++;
                 }
@@ -476,7 +476,7 @@ export class ApiProxyService {
         type: 'tool_use',
         id: tc.id,
         name: originalName,
-        input: JSON.parse(tc.function.arguments),
+        input: safeParseToolArgs(tc.function.arguments),
       });
     }
 

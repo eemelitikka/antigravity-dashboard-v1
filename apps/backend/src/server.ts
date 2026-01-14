@@ -546,8 +546,9 @@ app.get('/api/auth/google/url', (req, res) => {
               timestamp: Date.now()
             });
 
+            const escapedEmail = email.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
             res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(`<!DOCTYPE html><html><head><title>Success</title><style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}</style></head><body><div style="text-align:center"><h1 style="color:#4ade80">Authentication Successful</h1><p>Account ${email} added.</p><script>setTimeout(()=>window.close(),2000)</script></div></body></html>`);
+            res.end(`<!DOCTYPE html><html><head><title>Success</title><style>body{font-family:system-ui,sans-serif;background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}</style></head><body><div style="text-align:center"><h1 style="color:#4ade80">Authentication Successful</h1><p>Account ${escapedEmail} added.</p><script>setTimeout(()=>window.close(),2000)</script></div></body></html>`);
           } catch (e: unknown) {
             const errorMessage = e instanceof Error ? e.message : String(e);
             const escapedMessage = errorMessage.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1195,13 +1196,6 @@ app.get('/api/accounts/burn-rate', (req, res) => {
     const burnRates = accounts.map(acc => {
       const stats = monitor.getAccountBurnRateDetailed(acc.email);
       const quota = quotas.find(q => q.email === acc.email);
-
-      const claudeTotal = (quota?.claudeQuotaPercent && quota?.claudeQuotaPercent > 0 && stats)
-        ? (stats.claudeTokens1h / (1 - quota.claudeQuotaPercent / 100))
-        : 1000000;
-
-      // Better way: use remainingFraction from API if we had it directly here
-      // But for now, let's just return the raw tokens and let frontend handle % if it has quota info
 
       return {
         email: acc.email,
