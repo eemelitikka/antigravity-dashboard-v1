@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { TimelineSlice } from '../types';
 
 export function useTimeline(email?: string, hours: number = 24, pollingMs: number = 60000) {
@@ -11,7 +12,7 @@ export function useTimeline(email?: string, hours: number = 24, pollingMs: numbe
       const url = email 
         ? `/api/accounts/timeline?email=${encodeURIComponent(email)}&hours=${hours}`
         : `/api/accounts/timeline?hours=${hours}`;
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       const data = await response.json();
       
       if (data.success) {

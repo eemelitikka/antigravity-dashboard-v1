@@ -1,4 +1,5 @@
 import { useDashboardStore } from '../stores/useDashboardStore';
+import { apiFetch } from '../utils/apiFetch';
 import { Sun, Moon, Monitor, Bell, BellOff, Clock, Trash2, Download, RefreshCw, Server, Copy, Check, Key, Eye, EyeOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -71,9 +72,9 @@ export function SettingsPage() {
     const fetchProxyConfig = async () => {
       try {
         const [statusRes, keyRes, statsRes] = await Promise.all([
-          fetch('/api/proxy/status'),
-          fetch('/api/proxy/api-key'),
-          fetch('/api/proxy/stats')
+          apiFetch('/api/proxy/status'),
+          apiFetch('/api/proxy/api-key'),
+          apiFetch('/api/proxy/stats')
         ]);
         const status = await statusRes.json();
         const keyData = await keyRes.json();
@@ -104,7 +105,7 @@ export function SettingsPage() {
   const handleRegenerateApiKey = async () => {
     setRegeneratingKey(true);
     try {
-      const res = await fetch('/api/proxy/regenerate-api-key', { method: 'POST' });
+      const res = await apiFetch('/api/proxy/regenerate-api-key', { method: 'POST' });
       const data = await res.json();
       if (data.apiKey) {
         setProxyConfig(prev => prev ? { ...prev, apiKey: data.apiKey } : null);
@@ -132,7 +133,7 @@ export function SettingsPage() {
     setCleaning(true);
     setCleanResult(null);
     try {
-      const res = await fetch('/api/cleanup?olderThanDays=30', { method: 'DELETE' });
+      const res = await apiFetch('/api/cleanup?days=30', { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         setCleanResult(`Cleaned up ${data.deletedRows || 0} old records`);
@@ -149,7 +150,7 @@ export function SettingsPage() {
   const handleExportAll = async () => {
     setExporting(true);
     try {
-      const res = await fetch('/api/export');
+      const res = await apiFetch('/api/export');
       const data = await res.json();
       
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

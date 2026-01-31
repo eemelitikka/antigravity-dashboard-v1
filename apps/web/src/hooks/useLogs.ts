@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { CombinedLogEntry, LogFilters } from '../types';
 
 export function useLogs(initialFilters: LogFilters = {}, pollingMs: number = 10000) {
@@ -21,7 +22,7 @@ export function useLogs(initialFilters: LogFilters = {}, pollingMs: number = 100
       if (currentFilters.limit) params.append('limit', currentFilters.limit.toString());
       if (currentFilters.offset) params.append('offset', currentFilters.offset.toString());
 
-      const response = await fetch(`/api/logs/combined?${params.toString()}`);
+      const response = await apiFetch(`/api/logs/combined?${params.toString()}`);
       const data = await response.json();
       
       if (data.success) {

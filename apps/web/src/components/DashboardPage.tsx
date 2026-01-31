@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import { useDashboardStore } from '../stores/useDashboardStore';
 import { useLanguageServer } from '../hooks/useLanguageServer';
 import { Users, Sparkles, Bot, ImageIcon, AlertTriangle, ArrowRight, Download, RefreshCw, CheckCircle, TrendingUp, Mail, Radio, Zap, User } from 'lucide-react';
@@ -215,21 +216,21 @@ export function DashboardPage() {
   const fetchDashboardData = async () => {
     try {
       // Fetch summary stats
-      const summaryRes = await fetch('/api/accounts/summary');
+      const summaryRes = await apiFetch('/api/accounts/summary');
       const summaryData = await summaryRes.json();
       if (summaryData.success) {
         setSummary(summaryData.data);
       }
 
       // Fetch best accounts
-      const bestRes = await fetch('/api/accounts/best');
+      const bestRes = await apiFetch('/api/accounts/best');
       const bestData = await bestRes.json();
       if (bestData.success) {
         setBest(bestData.data);
       }
 
       // Fetch enriched accounts with tier and quotas
-      const enrichedRes = await fetch('/api/accounts/enriched');
+      const enrichedRes = await apiFetch('/api/accounts/enriched');
       const enrichedData = await enrichedRes.json();
       if (enrichedData.success) {
         setEnrichedAccounts(enrichedData.data);
@@ -242,7 +243,7 @@ export function DashboardPage() {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      await fetch('/api/accounts/quota/refresh', { method: 'POST' });
+      await apiFetch('/api/accounts/quota/refresh', { method: 'POST' });
       await Promise.all([fetchDashboardData(), refreshQuotaWindows(), refreshQuotaWindowStatus(), refreshLS()]);
     } finally {
       setRefreshing(false);
@@ -252,7 +253,7 @@ export function DashboardPage() {
   const handleSwitchToBest = async (email: string) => {
     setSwitching(true);
     try {
-      await fetch(`/api/accounts/switch/${encodeURIComponent(email)}`, { method: 'POST' });
+      await apiFetch(`/api/accounts/switch/${encodeURIComponent(email)}`, { method: 'POST' });
       await fetchDashboardData();
     } finally {
       setSwitching(false);
@@ -261,7 +262,7 @@ export function DashboardPage() {
 
   const handleExport = async () => {
     try {
-      const res = await fetch('/api/accounts/export');
+      const res = await apiFetch('/api/accounts/export');
       const data = await res.json();
       if (data.success) {
         const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });

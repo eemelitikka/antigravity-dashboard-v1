@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import { useDashboardStore } from '../stores/useDashboardStore';
 import {
   Search, Trash2, RefreshCw, Download, Plus, Check, X,
@@ -271,7 +272,7 @@ export function AccountsPage() {
   const fetchEnrichedAccounts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/accounts/enriched');
+      const res = await apiFetch('/api/accounts/enriched');
       const data = await res.json();
       if (data.success) {
         setEnrichedAccounts(data.data);
@@ -363,7 +364,7 @@ export function AccountsPage() {
 
   const handleSetActive = async (email: string) => {
     try {
-      await fetch(`/api/accounts/switch/${encodeURIComponent(email)}`, { method: 'POST' });
+      await apiFetch(`/api/accounts/switch/${encodeURIComponent(email)}`, { method: 'POST' });
       await fetchEnrichedAccounts();
     } catch (error) {
       console.error('Failed to set active account:', error);
@@ -373,7 +374,7 @@ export function AccountsPage() {
   const handleRefreshAccount = async (email: string) => {
     setRefreshingAccount(email);
     try {
-      await fetch(`/api/accounts/${encodeURIComponent(email)}/refresh`, { method: 'POST' });
+      await apiFetch(`/api/accounts/${encodeURIComponent(email)}/refresh`, { method: 'POST' });
       await fetchEnrichedAccounts();
     } finally {
       setRefreshingAccount(null);
@@ -382,7 +383,7 @@ export function AccountsPage() {
 
   const handleDeleteAccount = async (email: string) => {
     try {
-      await fetch(`/api/accounts/${encodeURIComponent(email)}`, { method: 'DELETE' });
+      await apiFetch(`/api/accounts/${encodeURIComponent(email)}`, { method: 'DELETE' });
       setDeleteConfirm(null);
       await fetchEnrichedAccounts();
     } catch (error) {
@@ -392,7 +393,7 @@ export function AccountsPage() {
 
   const handleBulkDelete = async () => {
     try {
-      await fetch('/api/accounts', {
+      await apiFetch('/api/accounts', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ emails: selectedAccounts })
@@ -408,7 +409,7 @@ export function AccountsPage() {
   const handleBulkRefresh = async () => {
     setLoading(true);
     try {
-      await fetch('/api/accounts/quota/refresh', { method: 'POST' });
+      await apiFetch('/api/accounts/quota/refresh', { method: 'POST' });
       await fetchEnrichedAccounts();
     } finally {
       setLoading(false);
@@ -417,7 +418,7 @@ export function AccountsPage() {
 
   const handleExport = async () => {
     try {
-      const res = await fetch('/api/accounts/export');
+      const res = await apiFetch('/api/accounts/export');
       const data = await res.json();
       if (data.success) {
         const blob = new Blob([JSON.stringify(data.data, null, 2)], { type: 'application/json' });
@@ -677,7 +678,7 @@ function AddAccountDialog({ onClose, onSuccess }: AddAccountDialogProps) {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/accounts', {
+      const res = await apiFetch('/api/accounts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -703,7 +704,7 @@ function AddAccountDialog({ onClose, onSuccess }: AddAccountDialogProps) {
   const handleGoogleAuth = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/auth/google/url');
+      const res = await apiFetch('/api/auth/google/url');
       const data = await res.json();
 
       if (data.success && data.url) {

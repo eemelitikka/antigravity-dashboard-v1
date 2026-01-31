@@ -148,19 +148,12 @@ export class WebSocketManager {
       return;
     }
 
-    if (this.messageQueue.length === 1) {
-      this.broadcastImmediate(this.messageQueue[0]);
-    } else {
-      const batchMessage: WSMessage = {
-        type: 'stats_update',
-        data: { batch: this.messageQueue },
-        timestamp: Date.now(),
-        seq: this.sequenceNumber++
-      };
-      this.broadcastImmediate(batchMessage);
-    }
-
+    const queued = this.messageQueue;
     this.messageQueue = [];
+    queued.forEach((message) => {
+      this.broadcastImmediate(message);
+    });
+
     this.batchTimer = null;
   }
 

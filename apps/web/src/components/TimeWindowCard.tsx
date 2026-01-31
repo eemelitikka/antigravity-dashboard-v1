@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import { Clock, Sparkles, Bot, ImageIcon, Zap } from 'lucide-react';
 
 interface ModelQuotaWindow {
@@ -234,7 +235,7 @@ export function useQuotaWindows(refreshInterval = 30000) {
   
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/accounts/quota-windows');
+      const res = await apiFetch('/api/accounts/quota-windows');
       const json = await res.json();
       if (json.success) {
         setData(json.data);

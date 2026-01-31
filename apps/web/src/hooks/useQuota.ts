@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { AccountQuota } from '../types';
 
 interface UseQuotaResult {
@@ -19,7 +20,7 @@ export function useQuota(pollingMs: number = 120000): UseQuotaResult {
 
   const fetchQuotas = useCallback(async () => {
     try {
-      const response = await fetch('/api/accounts/quota');
+      const response = await apiFetch('/api/accounts/quota');
       const data = await response.json();
       
       if (data.success) {
@@ -40,7 +41,7 @@ export function useQuota(pollingMs: number = 120000): UseQuotaResult {
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/accounts/quota/refresh', { method: 'POST' });
+      const response = await apiFetch('/api/accounts/quota/refresh', { method: 'POST' });
       const data = await response.json();
       
       if (data.success) {

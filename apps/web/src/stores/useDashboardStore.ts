@@ -6,22 +6,26 @@ import type {
   UserPreferences, 
   Notification,
   PageType,
-  AccountFilterType
+  AccountFilterType,
+  AccountStats,
+  ModelStats,
+  HourlyStats,
+  ApiCall
 } from '../types';
 
 interface DashboardState {
   localAccounts: LocalAccount[];
-  usageAccounts: any[];
-  models: any[];
-  hourlyStats: any[];
-  recentCalls: any[];
+  usageAccounts: AccountStats[];
+  models: ModelStats[];
+  hourlyStats: HourlyStats[];
+  recentCalls: ApiCall[];
   
   accountsStats: DashboardStats;
   
   wsConnected: boolean;
   lastUpdate: number;
   managerAvailable: boolean;
-  managerData: any;
+  managerData: Record<string, unknown> | null;
   
   notifications: Notification[];
   
@@ -39,17 +43,17 @@ interface DashboardState {
   
   setLocalAccounts: (accounts: LocalAccount[]) => void;
   updateLocalAccount: (email: string, changes: Partial<LocalAccount>) => void;
-  setUsageAccounts: (accounts: any[]) => void;
-  setModels: (models: any[]) => void;
-  setHourlyStats: (stats: any[]) => void;
-  setRecentCalls: (calls: any[]) => void;
+  setUsageAccounts: (accounts: AccountStats[]) => void;
+  setModels: (models: ModelStats[]) => void;
+  setHourlyStats: (stats: HourlyStats[]) => void;
+  setRecentCalls: (calls: ApiCall[]) => void;
   
   setAccountsStats: (stats: DashboardStats) => void;
   
   setWsConnected: (connected: boolean) => void;
   setLastUpdate: (timestamp: number) => void;
   setManagerAvailable: (available: boolean) => void;
-  setManagerData: (data: any) => void;
+  setManagerData: (data: Record<string, unknown> | null) => void;
   
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
   markNotificationRead: (id: string) => void;

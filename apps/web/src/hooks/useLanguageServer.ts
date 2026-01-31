@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { 
   LanguageServerStatus, 
   TokenUsageInfo, 
@@ -35,7 +36,7 @@ export function useLanguageServer(pollingMs: number = 90000) {
 
   const fetchStatus = useCallback(async () => {
     try {
-      const response = await fetch('/api/language-server/status');
+      const response = await apiFetch('/api/language-server/status');
       const result = await response.json();
       if (result.success) {
         setData(prev => ({
@@ -51,7 +52,7 @@ export function useLanguageServer(pollingMs: number = 90000) {
 
   const fetchCredits = useCallback(async () => {
     try {
-      const response = await fetch('/api/language-server/credits');
+      const response = await apiFetch('/api/language-server/credits');
       const result = await response.json();
       
       if (result.success && result.data) {
@@ -83,7 +84,7 @@ export function useLanguageServer(pollingMs: number = 90000) {
 
   const fetchUserInfo = useCallback(async () => {
     try {
-      const response = await fetch('/api/language-server/user');
+      const response = await apiFetch('/api/language-server/user');
       const result = await response.json();
       
       if (result.success && result.data) {
@@ -105,7 +106,7 @@ export function useLanguageServer(pollingMs: number = 90000) {
   const forceRefresh = useCallback(async () => {
     setData(prev => ({ ...prev, isLoading: true }));
     try {
-      const response = await fetch('/api/language-server/refresh', { method: 'POST' });
+      const response = await apiFetch('/api/language-server/refresh', { method: 'POST' });
       const result = await response.json();
       
       if (result.success && result.data) {

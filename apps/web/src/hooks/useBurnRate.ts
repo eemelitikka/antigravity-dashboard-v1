@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { AccountBurnRate } from '../types';
 
 export function useBurnRate(pollingMs: number = 60000) {
@@ -9,7 +10,7 @@ export function useBurnRate(pollingMs: number = 60000) {
 
   const fetchBurnRates = useCallback(async () => {
     try {
-      const response = await fetch('/api/accounts/burn-rate');
+      const response = await apiFetch('/api/accounts/burn-rate');
       const data = await response.json();
       
       if (data.success) {

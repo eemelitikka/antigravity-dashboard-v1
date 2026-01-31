@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import { Zap, Cpu, TrendingDown, RefreshCw, Server } from 'lucide-react';
 import { useLanguageServer, formatCredits, getCreditsColor, getCreditsTextColor } from '../hooks/useLanguageServer';
 import type { PromptCreditsInfo, FlowCreditsInfo } from '../types';
@@ -91,7 +92,7 @@ export function CreditsCard() {
   
   const fetchRunwayPrediction = useCallback(async () => {
     try {
-      const response = await fetch('/api/analytics/prediction');
+      const response = await apiFetch('/api/analytics/prediction');
       const result = await response.json();
       if (result.success && result.data?.overall) {
         setRunway(result.data.overall);

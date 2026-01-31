@@ -4,6 +4,7 @@ import { useWebSocket } from './hooks/useWebSocket';
 import { useQuota } from './hooks/useQuota';
 import { useBurnRate } from './hooks/useBurnRate';
 import { useAuth } from './hooks/useAuth';
+import { apiFetch } from './utils/apiFetch';
 import { RefreshCw, Activity, Zap, LayoutDashboard, Users, Settings, Moon, Sun, FileText } from 'lucide-react';
 import { DashboardPage } from './components/DashboardPage';
 import { AccountsPage } from './components/AccountsPage';
@@ -51,11 +52,7 @@ function App() {
 
   const fetchAccounts = async () => {
     try {
-      const headers: HeadersInit = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      const response = await fetch('/api/accounts/local', { headers });
+      const response = await apiFetch('/api/accounts/local');
       
       if (response.status === 401) {
         setInitialLoading(false);

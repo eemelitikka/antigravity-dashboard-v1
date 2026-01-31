@@ -84,6 +84,35 @@ export interface DashboardStats {
   lastUpdate: number;
 }
 
+export interface AccountStats {
+  email: string;
+  total_calls: number;
+  successful_calls: number;
+  failed_calls: number;
+  rate_limited_calls: number;
+  total_tokens: number;
+  last_used: number;
+  is_rate_limited: boolean;
+  rate_limit_reset?: number;
+  burn_rate_1h?: number;
+}
+
+export interface ModelStats {
+  model: string;
+  total_calls: number;
+  total_tokens: number;
+  avg_duration_ms: number;
+}
+
+export interface HourlyStats {
+  hour: number;
+  calls: number;
+  successful: number;
+  errors: number;
+  rate_limited: number;
+  tokens: number;
+}
+
 export interface AccountDiff {
   op: 'add' | 'update' | 'remove';
   email: string;
@@ -153,6 +182,9 @@ export interface ApiCall {
   status: 'success' | 'error' | 'rate_limited';
   error_message?: string;
   http_status?: number;
+  source?: 'internal' | 'proxy' | 'manager';
+  stream?: boolean;
+  client_ip?: string;
 }
 
 // Session event log

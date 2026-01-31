@@ -27,6 +27,21 @@ function getClientIp(req: Request): string {
   return req.socket.remoteAddress || 'unknown';
 }
 
+function extractApiKey(req: Request): string | undefined {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const [scheme, value] = authHeader.split(' ');
+    if (scheme?.toLowerCase() === 'bearer' && value) {
+      return value;
+    }
+  }
+  const headerKey = req.headers['x-api-key'];
+  if (typeof headerKey === 'string' && headerKey.length > 0) {
+    return headerKey;
+  }
+  return undefined;
+}
+
 export function initializeProxyRoutes(
   getAccessToken: (refreshToken: string) => Promise<string | null>,
   getAccounts: () => Account[],
@@ -59,6 +74,73 @@ export function initializeProxyRoutes(
 
   return apiRouter;
 }
+
+apiRouter.use((req: Request, res: Response, next: NextFunction) => {
+  if (!proxyService) {
+    res.status(503).json({ error: 'Proxy service not initialized' });
+    return;
+  }
+
+  const config = proxyService.getConfig();
+  if (!config.enabled) {
+    res.status(503).json({ error: 'Proxy is disabled' });
+    return;
+  }
+
+  const apiKey = extractApiKey(req);
+  if (!apiKey || !proxyService.validateApiKey(apiKey)) {
+    res.status(401).json({ error: 'Invalid API key' });
+    return;
+  }
+
+  next();
+});
+
+apiRouter.post('/v1/messages', async (req: Request, res: Response) => {
+  if (!proxyService) {
+    res.status(503).json({ error: 'Proxy service not initialized' });
+    return;
+  }
+
+  const request = req.body as ClaudeRequest;
+  const stream = !!request?.stream;
+  const clientIp = getClientIp(req);
+
+  try {
+    const result = await proxyService.handleClaudeRequest(request, res, stream, clientIp);
+    if (!stream) {
+      res.json(result);
+    }
+  } catch (error) {
+    const apiError = error instanceof ApiError ? error : null;
+    const message = apiError?.message || (error instanceof Error ? error.message : 'Unknown error');
+    const status = apiError?.status || 500;
+    res.status(status).json({ error: message });
+  }
+});
+
+apiRouter.post('/v1/chat/completions', async (req: Request, res: Response) => {
+  if (!proxyService) {
+    res.status(503).json({ error: 'Proxy service not initialized' });
+    return;
+  }
+
+  const request = req.body as OpenAIRequest;
+  const stream = !!request?.stream;
+  const clientIp = getClientIp(req);
+
+  try {
+    const result = await proxyService.handleOpenAIRequest(request, res, stream, clientIp);
+    if (!stream) {
+      res.json(result);
+    }
+  } catch (error) {
+    const apiError = error instanceof ApiError ? error : null;
+    const message = apiError?.message || (error instanceof Error ? error.message : 'Unknown error');
+    const status = apiError?.status || 500;
+    res.status(status).json({ error: message });
+  }
+});
 
 managementRouter.use(requireAuth);
 

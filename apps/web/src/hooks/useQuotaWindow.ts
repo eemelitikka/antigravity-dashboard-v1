@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import type { QuotaWindowStatus } from '../types';
 
 interface UseQuotaWindowResult {
@@ -17,7 +18,7 @@ export function useQuotaWindow(pollingMs: number = 30000): UseQuotaWindowResult 
 
   const fetchWindowStatus = useCallback(async () => {
     try {
-      const response = await fetch('/api/accounts/quota-window-status');
+      const response = await apiFetch('/api/accounts/quota-window-status');
       const result = await response.json();
       
       if (result.success) {

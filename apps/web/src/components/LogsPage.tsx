@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { apiFetch } from '../utils/apiFetch';
 import { 
   Search, RefreshCw, FileText, Activity, AlertCircle, CheckCircle, 
   Download, ChevronLeft, ChevronRight, X, Calendar
@@ -82,7 +83,7 @@ export function LogsPage() {
       params.append('limit', limit.toString());
       params.append('offset', ((page - 1) * limit).toString());
 
-      const response = await fetch(`/api/logs/combined?${params.toString()}`);
+      const response = await apiFetch(`/api/logs/combined?${params.toString()}`);
       const data: LogsResponse = await response.json();
       
       if (data.success && data.data) {
@@ -128,7 +129,7 @@ export function LogsPage() {
       }
       params.append('limit', '10000'); // Export up to 10k logs
       
-      const response = await fetch(`/api/logs/combined?${params.toString()}`);
+      const response = await apiFetch(`/api/logs/combined?${params.toString()}`);
       const data: LogsResponse = await response.json();
       
       if (data.success && data.data) {
