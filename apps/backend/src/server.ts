@@ -36,9 +36,13 @@ const PORT = process.env.DASHBOARD_PORT || 3456;
 const MANAGER_URL = process.env.MANAGER_URL || 'http://localhost:8080';
 
 // Security: Default to localhost-only CORS if not configured
-const defaultCorsOrigins = isAuthEnabled()
-  ? ['http://localhost:3456', 'http://localhost:5173']
-  : ['http://localhost:3456', 'http://127.0.0.1:3456', 'http://localhost:5173', 'https://antigravity-dashboard.trwn8n.xyz'];
+const defaultCorsOrigins = [
+  'http://localhost:3456', 
+  'http://localhost:5173', 
+  'http://127.0.0.1:3456', 
+  'https://antigravity-dashboard.trwn8n.xyz'
+];
+
 const corsOrigins = process.env.CORS_ORIGINS?.split(',') || defaultCorsOrigins;
 
 app.use(cors({
