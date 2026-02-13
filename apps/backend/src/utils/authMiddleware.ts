@@ -40,11 +40,18 @@ function extractTokenFromHeader(req: Request): string | undefined {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
+  // 1. ADD THIS: Skip authentication for browser preflight (OPTIONS) requests
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
+  // 2. Check if authentication is even enabled
   if (!isAuthEnabled()) {
     next();
     return;
   }
 
+  // 3. Extract the Bearer token from the header
   const token = extractTokenFromHeader(req);
   
   if (!token) {
@@ -56,6 +63,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
     return;
   }
 
+  // 4. Validate the token against your DASHBOARD_SECRET
   if (!validateToken(token)) {
     res.status(403).json({
       success: false,
