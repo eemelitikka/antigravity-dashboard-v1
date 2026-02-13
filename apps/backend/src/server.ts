@@ -201,9 +201,10 @@ initializeProxyRoutes(
   proxyLogger,
   rateLimitNotifier
 );
+app.use(express.static(path.join(__dirname, '../../web/dist')));
+
 app.use(proxyApiRouter);
 app.use(proxyManagementRouter);
-app.use(express.static(path.join(__dirname, '../../web/dist')));
 
 async function proxyToManager(endpoint: string, options?: RequestInit): Promise<any> {
   try {
