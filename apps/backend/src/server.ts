@@ -201,10 +201,14 @@ initializeProxyRoutes(
   proxyLogger,
   rateLimitNotifier
 );
+// 1. Management routes first (handles /api/health and /api/proxy/*)
+app.use(proxyManagementRouter);
+
+// 2. Static files second (handles the Dashboard UI)
 app.use(express.static(path.join(__dirname, '../../web/dist')));
 
+// 3. AI Proxy API last (handles /v1/*)
 app.use(proxyApiRouter);
-app.use(proxyManagementRouter);
 
 async function proxyToManager(endpoint: string, options?: RequestInit): Promise<any> {
   try {
