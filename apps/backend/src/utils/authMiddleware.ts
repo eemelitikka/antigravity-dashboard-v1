@@ -53,6 +53,10 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
 
   // 3. Extract the Bearer token from the header
   const token = extractTokenFromHeader(req);
+
+  console.log('🔍 DEBUG: Auth Check');
+  console.log('👉 Env Secret:', `"${process.env.DASHBOARD_SECRET}"`); // Quotes reveal hidden spaces!
+  console.log('👉 Received Token:', `"${token}"`);
   
   if (!token) {
     res.status(401).json({
