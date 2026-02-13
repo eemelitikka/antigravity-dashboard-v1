@@ -201,14 +201,16 @@ initializeProxyRoutes(
   proxyLogger,
   rateLimitNotifier
 );
-// 1. First, serve the dashboard files so the login page can load
+// 1. STATICS FIRST: Allows the browser to download the login page
 app.use(express.static(path.join(__dirname, '../../web/dist')));
 
-// 2. Then, mount the API and Proxy routes
-app.use(proxyApiRouter);
+// 2. MANAGEMENT SECOND: Handles /api/health and /api/proxy/* with auth
 app.use(proxyManagementRouter);
 
-// 3. (Optional) A "catch-all" to handle React routing
+// 3. PROXY LAST: Handles AI requests
+app.use(proxyApiRouter);
+
+// 4. SPA CATCH-ALL: Essential for React routing
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../web/dist/index.html'));
 });
