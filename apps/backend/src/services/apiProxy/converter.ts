@@ -183,6 +183,17 @@ function cleanParameters(obj: Record<string, unknown> | null | undefined): Recor
   const cleaned: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
     if (EXCLUDED_KEYS.has(key)) continue;
+
+    // FIX: Google API does not support array types (e.g. ["string", "null"])
+    // We must convert them to a single string (e.g. "string")
+    if (key === 'type' && Array.isArray(value)) {
+      const types = value as string[];
+      // Find the first non-null type, or default to string
+      const mainType = types.find(t => t !== 'null');
+      cleaned[key] = mainType || 'string';
+      continue;
+    }
+
     cleaned[key] = (value && typeof value === 'object') 
       ? cleanParameters(value as Record<string, unknown>) 
       : value;
