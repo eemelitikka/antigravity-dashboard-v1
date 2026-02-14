@@ -2069,6 +2069,8 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
   });
 });
 
+app.use(proxyApiRouter);
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../../web/dist/index.html'));
 });
