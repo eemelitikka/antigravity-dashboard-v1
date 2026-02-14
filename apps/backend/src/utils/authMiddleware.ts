@@ -40,9 +40,10 @@ function extractTokenFromHeader(req: Request): string | undefined {
 }
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  // 1. ADD THIS: Skip authentication for browser preflight (OPTIONS) requests
+  // 🛑 FIX: Return 200 OK immediately instead of calling next()
   if (req.method === 'OPTIONS') {
-    return next();
+    res.status(200).end();
+    return;
   }
 
   // 2. Check if authentication is even enabled
