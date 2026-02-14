@@ -142,7 +142,8 @@ apiRouter.post('/v1/chat/completions', async (req: Request, res: Response) => {
   }
 });
 
-managementRouter.use(requireAuth);
+// Only require dashboard auth for routes starting with /api/proxy
+managementRouter.use('/api/proxy', requireAuth);
 
 managementRouter.get('/api/proxy/status', (req: Request, res: Response) => {
   if (!proxyService) {
