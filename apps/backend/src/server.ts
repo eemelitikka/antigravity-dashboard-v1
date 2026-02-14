@@ -205,19 +205,8 @@ initializeProxyRoutes(
   proxyLogger,
   rateLimitNotifier
 );
-// 1. STATICS FIRST: Allows the browser to download the login page
 app.use(express.static(path.join(__dirname, '../../web/dist')));
-
-// 2. MANAGEMENT SECOND: Handles /api/health and /api/proxy/* with auth
 app.use(proxyManagementRouter);
-
-// 3. PROXY LAST: Handles AI requests
-app.use(proxyApiRouter);
-
-// 4. SPA CATCH-ALL: Essential for React routing
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../web/dist/index.html'));
-});
 
 async function proxyToManager(endpoint: string, options?: RequestInit): Promise<any> {
   try {
